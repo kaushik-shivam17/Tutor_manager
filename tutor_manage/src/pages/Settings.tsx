@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  Settings as SettingsIcon, Palette, User, LogOut, Keyboard, Github, Heart, Check,
+  Settings as SettingsIcon, Palette, User, LogOut, Keyboard, Heart, Check,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -125,19 +125,6 @@ export default function Settings() {
           <Row label="App" value="TutorManage" />
           <Row label="Version" value={APP_VERSION} />
           <Row label="Stack" value="React 19 · Vite 6 · Firebase · Tailwind" />
-          <Row
-            label="Source"
-            value={
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-indigo-200 hover:text-white font-bold"
-              >
-                <Github className="w-3.5 h-3.5" /> View on GitHub
-              </a>
-            }
-          />
         </div>
       </Card>
     </div>

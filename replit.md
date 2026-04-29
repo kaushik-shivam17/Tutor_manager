@@ -47,10 +47,6 @@ Two equally good options:
 
 Production build is code-split into `react`, `firebase`, `router`, `motion`, `date`, `icons`, and `vendor` chunks for optimal caching.
 
-## Optional Environment Variables
-
-- `GEMINI_API_KEY` — Used by the Google GenAI integration (`@google/genai`). Set as a Replit Secret if AI features are needed.
-
 ## Authentication
 
-Google sign-in via Firebase. The Firebase project (`ai-studio-applet-webapp-ef003`) must whitelist the deployed domain (e.g. `<project>.vercel.app`) under Firebase Auth → Settings → Authorized domains.
+Google sign-in via Firebase. The configured Firebase project must whitelist the deployed domain (e.g. `<project>.vercel.app`) under Firebase Auth → Settings → Authorized domains.
