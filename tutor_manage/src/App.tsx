@@ -11,6 +11,7 @@ import BatchDetails from './pages/BatchDetails';
 import StudentDetails from './pages/StudentDetails';
 import Analytics from './pages/Analytics';
 import Reports from './pages/Reports';
+import Settings from './pages/Settings';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="reports" element={<Reports />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="batch/:id" element={<BatchDetails />} />
                 <Route path="student/:id" element={<StudentDetails />} />
               </Route>

@@ -7,12 +7,13 @@ An offline-first web app for tutors to manage batches, students, attendance, and
 The application code lives inside the `tutor_manage/` directory.
 
 - `tutor_manage/src/`
-  - `pages/` — `Dashboard`, `Analytics`, `Reports`, `BatchDetails`, `StudentDetails`, `Login`
-  - `components/` — `Layout`, `CommandPalette`, `CalendarView`, `ErrorBoundary`
+  - `pages/` — `Dashboard`, `Analytics`, `Reports`, `Settings`, `BatchDetails`, `StudentDetails`, `Login`
+  - `components/` — `Layout`, `CommandPalette`, `NotificationsBell`, `ShortcutsDialog`, `CalendarView`, `ErrorBoundary`
   - `contexts/` — `AuthContext`, `ThemeContext`
   - `services/` — `db.ts` (Firestore subscriptions and mutations)
   - `models/` — TypeScript types
-  - `utils/` — `csv.ts` (CSV builder + downloader), `firestoreErrorHandler.ts`
+  - `utils/` — `csv.ts`, `insights.ts` (smart-notification builder), `firestoreErrorHandler.ts`
+- `tutor_manage/public/manifest.webmanifest`, `tutor_manage/public/icon.svg` — PWA assets
 - `tutor_manage/index.html`, `vite.config.ts`, `tsconfig.json`
 - `tutor_manage/firebase-applet-config.json` — Firebase project config
 - `tutor_manage/vercel.json` — Vercel SPA config when deploying with `tutor_manage/` as the root
@@ -23,8 +24,12 @@ The application code lives inside the `tutor_manage/` directory.
 - **Dashboard** — KPIs, batch list, smart search, pending-fees action center with WhatsApp reminders
 - **Analytics** — Live charts for revenue (last 6 months), attendance trend (14 days), per-batch performance, top paying students
 - **Reports** — Filterable CSV export for students, fees, attendance + printable summary
+- **Settings** — Profile card, visual theme picker, keyboard shortcuts, app/version info
+- **Smart Notifications** — Bell in nav surfaces overdue students, pending-fees per batch, low-attendance batches, new joiners, empty batches; unseen state persisted to localStorage
 - **Command Palette** — Cmd/Ctrl + K to instantly search batches, students, and pages
+- **Keyboard Shortcuts dialog** — Press `?` anywhere to view shortcuts
 - **Theme switcher** — Cycle through Vibrant, Midnight, Sunset, Forest gradients (persisted in localStorage)
+- **PWA** — Installable manifest + SVG icon, standalone display, theme color, Apple touch metadata
 - **Mobile-friendly nav** with hamburger menu
 
 ## Replit Setup

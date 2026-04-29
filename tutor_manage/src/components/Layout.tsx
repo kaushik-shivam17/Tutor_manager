@@ -4,11 +4,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
   LogOut, LayoutDashboard, GraduationCap, Activity, FileText,
-  Search, Palette, Menu, X
+  Search, Palette, Menu, X, Settings as SettingsIcon, Keyboard
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import CommandPalette from './CommandPalette';
+import NotificationsBell from './NotificationsBell';
+import ShortcutsDialog from './ShortcutsDialog';
 import {
   subscribeToBatches,
   subscribeToStudents,
@@ -21,6 +23,7 @@ export default function Layout() {
   const location = useLocation();
 
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -33,10 +36,25 @@ export default function Layout() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      const isTyping =
+        tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement | null)?.isContentEditable;
+
       const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k';
       if (isCmdK) {
         e.preventDefault();
         setPaletteOpen(o => !o);
+        return;
+      }
+
+      if (!isTyping && e.key === '?' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setShortcutsOpen(o => !o);
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setShortcutsOpen(false);
       }
     };
     window.addEventListener('keydown', handler);
@@ -117,6 +135,32 @@ export default function Layout() {
                 <kbd className="hidden lg:inline ml-1 text-[10px] font-bold bg-white/15 border border-white/20 rounded px-1.5 py-0.5">⌘K</kbd>
               </button>
 
+              {/* Notifications */}
+              <NotificationsBell />
+
+              {/* Shortcuts help */}
+              <button
+                onClick={() => setShortcutsOpen(true)}
+                className="hidden sm:inline-flex p-2.5 bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 rounded-xl transition-all shadow-sm"
+                title="Keyboard shortcuts (?)"
+              >
+                <Keyboard className="w-4 h-4" />
+              </button>
+
+              {/* Settings */}
+              <Link
+                to="/settings"
+                className={clsx(
+                  'p-2.5 border rounded-xl transition-all shadow-sm group',
+                  location.pathname === '/settings'
+                    ? 'bg-white/20 border-white/40 text-white'
+                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30'
+                )}
+                title="Settings"
+              >
+                <SettingsIcon className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
+              </Link>
+
               {/* Theme cycle */}
               <button
                 onClick={cycleTheme}
@@ -187,6 +231,15 @@ export default function Layout() {
                       </Link>
                     );
                   })}
+                  <Link
+                    to="/settings"
+                    className={clsx(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold w-full',
+                      location.pathname === '/settings' ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
+                    )}
+                  >
+                    <SettingsIcon className="w-4 h-4" /> Settings
+                  </Link>
                   <button
                     onClick={() => { setPaletteOpen(true); setMobileNavOpen(false); }}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-white/80 hover:bg-white/10 w-full"
@@ -226,6 +279,8 @@ export default function Layout() {
         batches={batches}
         students={students}
       />
+
+      <ShortcutsDialog open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>
   );
 }
