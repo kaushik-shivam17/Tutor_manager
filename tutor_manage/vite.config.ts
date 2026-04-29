@@ -26,5 +26,25 @@ export default defineConfig(({mode}) => {
       port: 5000,
       allowedHosts: true,
     },
+    build: {
+      target: 'es2022',
+      sourcemap: false,
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('firebase')) return 'firebase';
+              if (id.includes('react-router')) return 'router';
+              if (id.includes('framer-motion') || id.includes('motion')) return 'motion';
+              if (id.includes('date-fns')) return 'date';
+              if (id.includes('lucide-react')) return 'icons';
+              if (id.includes('react') || id.includes('scheduler')) return 'react';
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
   };
 });

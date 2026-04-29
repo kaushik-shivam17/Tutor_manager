@@ -248,3 +248,22 @@ export const markFeePaid = async (feeId: string, status: 'Paid' | 'Unpaid') => {
     handleFirestoreError(error, OperationType.UPDATE, `fees/${feeId}`);
   }
 };
+
+// Analytics / bulk fetches
+export const subscribeAllFees = (callback: (fees: Fee[]) => void) => {
+  const uid = getUserId();
+  if (!uid) return () => {};
+  const q = query(collection(db, 'fees'), where('userId', '==', uid));
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Fee)));
+  }, (error) => handleFirestoreError(error, OperationType.LIST, 'fees'));
+};
+
+export const subscribeAllAttendance = (callback: (records: Attendance[]) => void) => {
+  const uid = getUserId();
+  if (!uid) return () => {};
+  const q = query(collection(db, 'attendance'), where('userId', '==', uid));
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Attendance)));
+  }, (error) => handleFirestoreError(error, OperationType.LIST, 'attendance'));
+};

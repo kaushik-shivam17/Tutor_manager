@@ -6,22 +6,46 @@ An offline-first web app for tutors to manage batches, students, attendance, and
 
 The application code lives inside the `tutor_manage/` directory.
 
-- `tutor_manage/src/` — React source code (components, pages, contexts, services, models, utils)
-- `tutor_manage/index.html` — Vite entry
-- `tutor_manage/vite.config.ts` — Vite config (configured for Replit: host `0.0.0.0`, port `5000`, all hosts allowed)
+- `tutor_manage/src/`
+  - `pages/` — `Dashboard`, `Analytics`, `Reports`, `BatchDetails`, `StudentDetails`, `Login`
+  - `components/` — `Layout`, `CommandPalette`, `CalendarView`, `ErrorBoundary`
+  - `contexts/` — `AuthContext`, `ThemeContext`
+  - `services/` — `db.ts` (Firestore subscriptions and mutations)
+  - `models/` — TypeScript types
+  - `utils/` — `csv.ts` (CSV builder + downloader), `firestoreErrorHandler.ts`
+- `tutor_manage/index.html`, `vite.config.ts`, `tsconfig.json`
 - `tutor_manage/firebase-applet-config.json` — Firebase project config
-- `tutor_manage/package.json` — Dependencies and scripts
+- `tutor_manage/vercel.json` — Vercel SPA config when deploying with `tutor_manage/` as the root
+- `vercel.json` (repo root) — Vercel config for deploying the whole repo
+
+## Features
+
+- **Dashboard** — KPIs, batch list, smart search, pending-fees action center with WhatsApp reminders
+- **Analytics** — Live charts for revenue (last 6 months), attendance trend (14 days), per-batch performance, top paying students
+- **Reports** — Filterable CSV export for students, fees, attendance + printable summary
+- **Command Palette** — Cmd/Ctrl + K to instantly search batches, students, and pages
+- **Theme switcher** — Cycle through Vibrant, Midnight, Sunset, Forest gradients (persisted in localStorage)
+- **Mobile-friendly nav** with hamburger menu
 
 ## Replit Setup
 
-- **Workflow:** `Start application` runs `cd tutor_manage && npm run dev` and serves on port 5000 (webview).
-- **Frontend host:** `0.0.0.0:5000`, `allowedHosts: true` in Vite config so the Replit iframe proxy can reach it.
-- **Deployment:** Configured as a static deployment. Build runs `npm install && npm run build` inside `tutor_manage/`, and the published output comes from `tutor_manage/dist`.
+- **Workflow:** `Start application` runs `cd tutor_manage && npm run dev` and serves on port 5000 (webview)
+- **Frontend host:** `0.0.0.0:5000`, `allowedHosts: true` in Vite config so the Replit iframe proxy can reach it
+- **Replit Deployment:** Configured as static — build runs `npm install && npm run build` inside `tutor_manage/`, output served from `tutor_manage/dist`
+
+## Vercel Deployment
+
+Two equally good options:
+
+1. **Deploy the repo root.** The root `vercel.json` already builds `tutor_manage/` and serves `tutor_manage/dist` with SPA rewrites, immutable asset caching, and security headers.
+2. **Deploy `tutor_manage/` as the project root.** The framework will be auto-detected as Vite; `tutor_manage/vercel.json` provides SPA rewrites and the same headers.
+
+Production build is code-split into `react`, `firebase`, `router`, `motion`, `date`, `icons`, and `vendor` chunks for optimal caching.
 
 ## Optional Environment Variables
 
 - `GEMINI_API_KEY` — Used by the Google GenAI integration (`@google/genai`). Set as a Replit Secret if AI features are needed.
 
-## Notes
+## Authentication
 
-- The original setup used port 3000 and Vercel deployment. It was adapted for Replit by switching to port 5000, allowing all hosts in Vite, and configuring static deployment.
+Google sign-in via Firebase. The Firebase project (`ai-studio-applet-webapp-ef003`) must whitelist the deployed domain (e.g. `<project>.vercel.app`) under Firebase Auth → Settings → Authorized domains.
