@@ -1,0 +1,5 @@
+{
+  "name": "Tutor Manage",
+  "description": "An offline-first mobile app for tutors to manage batches, students, attendance, and fees.",
+  "requestFramePermissions": []
+}

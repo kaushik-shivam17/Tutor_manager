@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "Batch": {
+      "title": "Batch",
+      "description": "A batch of students",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "startDate": { "type": "string", "format": "date" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "startDate", "userId", "createdAt"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "A student enrolled in a batch",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "fatherName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "joiningDate": { "type": "string", "format": "date" },
+        "monthlyFee": { "type": "number" },
+        "batchId": { "type": "string" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "fatherName", "mobileNumber", "joiningDate", "monthlyFee", "batchId", "userId", "createdAt"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily attendance record for a student",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["Present", "Absent"] },
+        "userId": { "type": "string" }
+      },
+      "required": ["studentId", "batchId", "date", "status", "userId"]
+    },
+    "Fee": {
+      "title": "Fee",
+      "description": "Monthly fee record for a student",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "batchId": { "type": "string" },
+        "month": { "type": "number" },
+        "year": { "type": "number" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Paid", "Unpaid"] },
+        "paymentDate": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["studentId", "batchId", "month", "year", "amount", "status", "userId"]
+    }
+  },
+  "firestore": {
+    "/batches/{batchId}": {
+      "schema": { "$ref": "#/entities/Batch" },
+      "description": "Batches created by tutors"
+    },
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/Student" },
+      "description": "Students enrolled in batches"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Attendance records for students"
+    },
+    "/fees/{feeId}": {
+      "schema": { "$ref": "#/entities/Fee" },
+      "description": "Fee records for students"
+    }
+  }
+}

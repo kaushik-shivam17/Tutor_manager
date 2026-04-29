@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function isCreatingWithOwnerId() {
+      return isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    function isUpdatingWithOwnerId() {
+      return isAuthenticated() && request.resource.data.userId == resource.data.userId;
+    }
+
+    match /batches/{batchId} {
+      allow read: if isOwner();
+      allow create: if isCreatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['name', 'startDate', 'userId', 'createdAt']) &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100 &&
+        request.resource.data.startDate is string &&
+        request.resource.data.createdAt is string;
+      allow update: if isOwner() && isUpdatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['name', 'startDate', 'userId', 'createdAt']) &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100 &&
+        request.resource.data.startDate is string &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner();
+    }
+
+    match /students/{studentId} {
+      allow read: if isOwner();
+      allow create: if isCreatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['name', 'fatherName', 'mobileNumber', 'joiningDate', 'monthlyFee', 'batchId', 'userId', 'createdAt']) &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100 &&
+        request.resource.data.fatherName is string && request.resource.data.fatherName.size() < 100 &&
+        request.resource.data.mobileNumber is string && request.resource.data.mobileNumber.size() < 20 &&
+        request.resource.data.joiningDate is string &&
+        request.resource.data.monthlyFee is number && request.resource.data.monthlyFee >= 0 &&
+        request.resource.data.batchId is string && request.resource.data.batchId.size() > 0 &&
+        request.resource.data.createdAt is string;
+      allow update: if isOwner() && isUpdatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['name', 'fatherName', 'mobileNumber', 'joiningDate', 'monthlyFee', 'batchId', 'userId', 'createdAt']) &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100 &&
+        request.resource.data.fatherName is string && request.resource.data.fatherName.size() < 100 &&
+        request.resource.data.mobileNumber is string && request.resource.data.mobileNumber.size() < 20 &&
+        request.resource.data.joiningDate is string &&
+        request.resource.data.monthlyFee is number && request.resource.data.monthlyFee >= 0 &&
+        request.resource.data.batchId is string && request.resource.data.batchId.size() > 0 &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read: if isOwner();
+      allow create: if isCreatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['studentId', 'batchId', 'date', 'status', 'userId']) &&
+        request.resource.data.studentId is string && request.resource.data.studentId.size() > 0 &&
+        request.resource.data.batchId is string && request.resource.data.batchId.size() > 0 &&
+        request.resource.data.date is string && request.resource.data.date.size() > 0 &&
+        request.resource.data.status in ['Present', 'Absent', 'Holiday'];
+      allow update: if isOwner() && isUpdatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['studentId', 'batchId', 'date', 'status', 'userId']) &&
+        request.resource.data.studentId == resource.data.studentId &&
+        request.resource.data.batchId == resource.data.batchId &&
+        request.resource.data.date == resource.data.date &&
+        request.resource.data.status in ['Present', 'Absent', 'Holiday'];
+      allow delete: if isOwner();
+    }
+
+    match /fees/{feeId} {
+      allow read: if isOwner();
+      allow create: if isCreatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['studentId', 'batchId', 'month', 'year', 'amount', 'status', 'userId']) &&
+        request.resource.data.studentId is string && request.resource.data.studentId.size() > 0 &&
+        request.resource.data.batchId is string && request.resource.data.batchId.size() > 0 &&
+        request.resource.data.month is number && request.resource.data.month >= 1 && request.resource.data.month <= 12 &&
+        request.resource.data.year is number && request.resource.data.year >= 2000 &&
+        request.resource.data.amount is number && request.resource.data.amount >= 0 &&
+        request.resource.data.status in ['Paid', 'Unpaid'] &&
+        (!('paymentDate' in request.resource.data) || request.resource.data.paymentDate is string || request.resource.data.paymentDate == null);
+      allow update: if isOwner() && isUpdatingWithOwnerId() &&
+        request.resource.data.keys().hasAll(['studentId', 'batchId', 'month', 'year', 'amount', 'status', 'userId']) &&
+        request.resource.data.studentId == resource.data.studentId &&
+        request.resource.data.batchId == resource.data.batchId &&
+        request.resource.data.month == resource.data.month &&
+        request.resource.data.year == resource.data.year &&
+        request.resource.data.amount is number && request.resource.data.amount >= 0 &&
+        request.resource.data.status in ['Paid', 'Unpaid'] &&
+        (!('paymentDate' in request.resource.data) || request.resource.data.paymentDate is string || request.resource.data.paymentDate == null);
+      allow delete: if isOwner();
+    }
+  }
+}
