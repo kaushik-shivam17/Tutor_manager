@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Users, CalendarCheck, DollarSign, Phone, Edit, Trash2, ArrowRightLeft, Search, Filter, ChevronLeft, FileText, ChevronDown } from 'lucide-react';
+import { Users, CalendarCheck, DollarSign, Phone, Edit, Trash2, ArrowRightLeft, Search, Filter, ChevronLeft, FileText, ChevronDown, UserPlus } from 'lucide-react';
 import { clsx } from 'clsx';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSunday, isToday } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -790,37 +790,42 @@ export default function BatchDetails() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="relative z-10 w-full max-w-2xl p-8 my-8 overflow-hidden text-left bg-white/10 backdrop-blur-2xl shadow-xl rounded-3xl border border-white/20"
             >
-              <h3 className="text-2xl font-bold leading-6 text-white mb-8 drop-shadow-sm">{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-sky-100/80 text-sky-600 rounded-2xl border border-sky-200 shadow-sm">
+                  <UserPlus className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-bold leading-6 text-white drop-shadow-sm">{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
+              </div>
               <form onSubmit={handleSaveStudent} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-bold text-white/90 mb-2">Full Name</label>
-                    <input type="text" required maxLength={90} value={studentForm.name} onChange={e => setStudentForm({...studentForm, name: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. John Doe" />
+                    <input type="text" required maxLength={90} value={studentForm.name} onChange={e => setStudentForm({...studentForm, name: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. John Doe" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Father's Name</label>
-                    <input type="text" required maxLength={90} value={studentForm.fatherName} onChange={e => setStudentForm({...studentForm, fatherName: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. Robert Doe" />
+                    <input type="text" required maxLength={90} value={studentForm.fatherName} onChange={e => setStudentForm({...studentForm, fatherName: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. Robert Doe" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Mobile Number</label>
-                    <input type="tel" required maxLength={15} value={studentForm.mobileNumber} onChange={e => setStudentForm({...studentForm, mobileNumber: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. +1 234 567 8900" />
+                    <input type="tel" required maxLength={15} value={studentForm.mobileNumber} onChange={e => setStudentForm({...studentForm, mobileNumber: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" placeholder="e.g. +1 234 567 8900" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Joining Date</label>
-                    <input type="date" required value={studentForm.joiningDate} onChange={e => setStudentForm({...studentForm, joiningDate: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors text-white font-medium" />
+                    <input type="date" required value={studentForm.joiningDate} onChange={e => setStudentForm({...studentForm, joiningDate: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Monthly Fee (₹)</label>
                     <input type="number" required min="0" value={studentForm.monthlyFee} onChange={e => {
                       setStudentForm({...studentForm, monthlyFee: e.target.value});
-                    }} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors text-white font-medium" placeholder="0" />
+                    }} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" placeholder="0" />
                   </div>
                 </div>
                 <div className="mt-10 flex gap-4 sm:flex-row-reverse">
-                  <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 rounded-2xl shadow-lg shadow-indigo-200/50 text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+                  <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 rounded-2xl shadow-lg shadow-sky-300/50 text-sm font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
                     {isSubmitting ? 'Saving...' : 'Save Student'}
                   </button>
-                  <button type="button" disabled={isSubmitting} onClick={() => setIsStudentModalOpen(false)} className="w-full sm:w-auto mt-3 sm:mt-0 inline-flex justify-center items-center px-8 py-3 border border-white/20/60 rounded-2xl shadow-sm text-sm font-bold text-white/90 bg-white/10 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  <button type="button" disabled={isSubmitting} onClick={() => setIsStudentModalOpen(false)} className="w-full sm:w-auto mt-3 sm:mt-0 inline-flex justify-center items-center px-8 py-3 border border-white/20 rounded-2xl shadow-sm text-sm font-bold text-white/90 bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancel
                   </button>
                 </div>
