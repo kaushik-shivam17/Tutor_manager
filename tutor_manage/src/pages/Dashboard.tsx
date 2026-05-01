@@ -117,7 +117,7 @@ export default function Dashboard() {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="absolute z-50 mt-2 w-full bg-white/20 backdrop-blur-3xl rounded-2xl shadow-xl border border-white/20 overflow-hidden"
+                  className="absolute z-50 mt-2 w-full bg-slate-900/95 backdrop-blur-2xl rounded-2xl shadow-xl border border-white/20 overflow-hidden"
                 >
                   <ul className="max-h-80 overflow-y-auto custom-scrollbar p-2 space-y-1">
                     {searchResults.map((student) => {
@@ -428,7 +428,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
+                className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
               >
                 <div>
                   <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-white/20 border border-white/30 shadow-inner mb-6 transform rotate-3">
@@ -455,7 +455,7 @@ export default function Dashboard() {
                       id="date"
                       value={newBatchDate}
                       onChange={(e) => setNewBatchDate(e.target.value)}
-                      className="block w-full border-white/30 bg-white/10 text-white backdrop-blur-sm rounded-2xl shadow-inner focus:ring-2 focus:ring-white focus:border-white sm:text-base px-5 py-4 font-bold cursor-pointer transition-all hover:bg-white/20"
+                      className="block w-full border-white/30 bg-white/10 text-white backdrop-blur-sm rounded-2xl shadow-inner focus:ring-2 focus:ring-white focus:border-white sm:text-base px-5 py-4 font-bold cursor-pointer transition-all hover:bg-white/20 [color-scheme:dark]"
                       required
                     />
                   </div>

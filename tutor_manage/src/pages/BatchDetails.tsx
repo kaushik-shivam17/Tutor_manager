@@ -369,7 +369,7 @@ export default function BatchDetails() {
                       <tr key={student.id} className="hover:bg-white/10 transition-colors group">
                         <td className="px-6 py-5 whitespace-nowrap">
                           <Link to={`/student/${student.id}`} className="text-indigo-200 hover:text-indigo-200 font-bold text-base flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-xs text-indigo-200 border border-white/20 shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/40 to-purple-500/40 flex items-center justify-center text-xs text-indigo-200 border border-white/20 shadow-sm">
                               {student.name.charAt(0).toUpperCase()}
                             </div>
                             {student.name}
@@ -393,11 +393,11 @@ export default function BatchDetails() {
                           </button>
                           <button 
                             onClick={() => { setTransferStudent(student); setIsTransferModalOpen(true); }} 
-                            className="p-2 bg-white/10 border border-white/20 text-white/60 hover:text-amber-600 hover:bg-amber-50 rounded-xl shadow-sm transition-all" title="Transfer Batch"
+                            className="p-2 bg-white/10 border border-white/20 text-white/60 hover:text-amber-300 hover:bg-amber-500/20 hover:border-amber-400/40 rounded-xl shadow-sm transition-all" title="Transfer Batch"
                           >
                             <ArrowRightLeft className="w-4 h-4" />
                           </button>
-                          <button onClick={() => confirmDeleteStudent(student.id)} className="p-2 bg-white/10 border border-white/20 text-white/60 hover:text-rose-200 hover:bg-rose-50 rounded-xl shadow-sm transition-all" title="Delete">
+                          <button onClick={() => confirmDeleteStudent(student.id)} className="p-2 bg-white/10 border border-white/20 text-white/60 hover:text-rose-300 hover:bg-rose-500/20 hover:border-rose-400/40 rounded-xl shadow-sm transition-all" title="Delete">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -452,18 +452,18 @@ export default function BatchDetails() {
                       type="date"
                       value={attendanceDate}
                       onChange={(e) => setAttendanceDate(e.target.value)}
-                      className="cursor-pointer text-white font-bold px-4 py-2.5 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors backdrop-blur-sm"
+                      className="cursor-pointer text-white font-bold px-4 py-2.5 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors backdrop-blur-sm [color-scheme:dark]"
                     />
                   </div>
                   
                   <div className="flex gap-3 flex-wrap">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-100/50 text-emerald-200 rounded-xl text-sm border border-emerald-200/60 font-semibold shadow-sm backdrop-blur-sm">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 text-emerald-200 rounded-xl text-sm border border-emerald-400/40 font-semibold shadow-sm backdrop-blur-sm">
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> Present: {presentCount}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-rose-100/50 text-rose-200 rounded-xl text-sm border border-rose-200/60 font-semibold shadow-sm backdrop-blur-sm">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/20 text-rose-200 rounded-xl text-sm border border-rose-400/40 font-semibold shadow-sm backdrop-blur-sm">
                       <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span> Absent: {absentCount}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-100/50 text-amber-800 rounded-xl text-sm border border-amber-200/60 font-semibold shadow-sm backdrop-blur-sm">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 text-amber-200 rounded-xl text-sm border border-amber-400/40 font-semibold shadow-sm backdrop-blur-sm">
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span> Unmarked: {unmarkedCount}
                     </div>
                   </div>
@@ -479,14 +479,14 @@ export default function BatchDetails() {
                   </button>
                   <button
                     onClick={handleMarkDayAsHoliday}
-                    className="w-full sm:w-auto whitespace-nowrap bg-amber-100/80 text-amber-800 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-200 min-w-max shadow-sm transition-all hover:scale-[1.02] border border-amber-300/50 backdrop-blur-sm"
+                    className="w-full sm:w-auto whitespace-nowrap bg-amber-500/20 text-amber-200 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-500/30 min-w-max shadow-sm transition-all hover:scale-[1.02] border border-amber-400/40"
                   >
                     Mark as Holiday
                   </button>
                   {unmarkedCount > 0 && (
                     <button
                       onClick={handleMarkUnmarkedAbsent}
-                      className="w-full sm:w-auto whitespace-nowrap bg-rose-100/80 text-rose-200 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-rose-200 shadow-sm transition-all hover:scale-[1.02] border border-rose-300/50 backdrop-blur-sm"
+                      className="w-full sm:w-auto whitespace-nowrap bg-rose-500/20 text-rose-200 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-rose-500/30 shadow-sm transition-all hover:scale-[1.02] border border-rose-400/40"
                     >
                       Mark Rest Absent
                     </button>
@@ -531,8 +531,8 @@ export default function BatchDetails() {
                               onClick={() => setAttendanceDate(dateStr)}
                               className={clsx(
                                 "px-2 py-3 text-center cursor-pointer select-none transition-all duration-300 border-r border-white/30 min-w-[50px]",
-                                isSun ? "bg-rose-100/60 hover:bg-rose-200/60 text-rose-200" : "hover:bg-white/10 text-white/90",
-                                isSelected && "bg-indigo-100/80 border-b-[3px] border-b-indigo-500 shadow-[inset_0_-4px_10px_-4px_rgba(79,70,229,0.2)]"
+                                isSun ? "bg-rose-500/20 hover:bg-rose-500/30 text-rose-200" : "hover:bg-white/10 text-white/90",
+                                isSelected && "bg-indigo-500/30 border-b-[3px] border-b-indigo-400 shadow-[inset_0_-4px_10px_-4px_rgba(79,70,229,0.3)]"
                               )}
                             >
                               <div className={clsx("text-[10px] font-bold uppercase tracking-wider", isSun ? "text-rose-200 font-extrabold" : "text-white/60")}>
@@ -590,7 +590,7 @@ export default function BatchDetails() {
                                 onClick={() => handleGridCellClick(student.id, dateStr, record?.status)}
                                 className={clsx(
                                   "px-2 py-2 text-center border-r border-white/30 font-extrabold text-lg select-none cursor-pointer transition-all duration-200 transform",
-                                  isSelected ? "bg-indigo-50/50" : isSun && !record ? "bg-rose-50/50" : "hover:bg-white/10 hover:scale-110",
+                                  isSelected ? "bg-indigo-500/25" : isSun && !record ? "bg-rose-500/15" : "hover:bg-white/10 hover:scale-110",
                                   "active:scale-95"
                                 )}
                               >
@@ -708,7 +708,7 @@ export default function BatchDetails() {
                       return (
                         <tr key={fee.id} className={clsx(
                           "transition-colors hover:bg-white/10 group",
-                          fee.status === 'Unpaid' ? 'bg-rose-50/40 backdrop-blur-sm' : ''
+                          fee.status === 'Unpaid' ? 'bg-rose-500/10' : ''
                         )}>
                           <td className="px-6 py-5 whitespace-nowrap">
                             <div className="font-bold text-white text-base">{student?.name || 'Unknown'}</div>
@@ -720,8 +720,8 @@ export default function BatchDetails() {
                           </td>
                           <td className="px-6 py-5 whitespace-nowrap">
                             <span className={clsx(
-                              'px-3.5 py-1.5 inline-flex text-xs font-bold rounded-xl shadow-sm backdrop-blur-sm border',
-                              fee.status === 'Paid' ? 'bg-emerald-100/80 text-emerald-200 border-emerald-200' : 'bg-rose-100/80 text-rose-200 border-rose-200'
+                              'px-3.5 py-1.5 inline-flex text-xs font-bold rounded-xl shadow-sm border',
+                              fee.status === 'Paid' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' : 'bg-rose-500/20 text-rose-300 border-rose-400/40'
                             )}>
                               {fee.status}
                             </span>
@@ -751,7 +751,7 @@ export default function BatchDetails() {
                                 </button>
                                 <button
                                   onClick={() => markFeePaid(fee.id, 'Paid')}
-                                  className="text-emerald-200 font-bold hover:text-emerald-200 transition-all bg-emerald-100/80 hover:bg-emerald-200 px-4 py-2 rounded-xl shadow-sm border border-emerald-200 border-b-2 active:border-b active:translate-y-[1px]"
+                                  className="text-emerald-200 font-bold hover:text-emerald-100 transition-all bg-emerald-500/20 hover:bg-emerald-500/30 px-4 py-2 rounded-xl shadow-sm border border-emerald-400/40 border-b-2 active:border-b active:translate-y-[1px]"
                                 >
                                   Mark Paid
                                 </button>
@@ -810,7 +810,7 @@ export default function BatchDetails() {
               className="relative z-10 w-full max-w-2xl p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-sky-100/80 text-sky-600 rounded-2xl border border-sky-200 shadow-sm">
+                <div className="p-3 bg-sky-500/20 text-sky-300 rounded-2xl border border-sky-400/40 shadow-sm">
                   <UserPlus className="w-6 h-6" />
                 </div>
                 <h3 className="text-2xl font-bold leading-6 text-white drop-shadow-sm">{editingStudent ? 'Edit Student' : 'Add New Student'}</h3>
@@ -831,7 +831,7 @@ export default function BatchDetails() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Joining Date</label>
-                    <input type="date" required value={studentForm.joiningDate} onChange={e => setStudentForm({...studentForm, joiningDate: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium" />
+                    <input type="date" required value={studentForm.joiningDate} onChange={e => setStudentForm({...studentForm, joiningDate: e.target.value})} className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl shadow-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 sm:text-sm transition-colors text-white font-medium [color-scheme:dark]" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-white/90 mb-2">Monthly Fee (₹)</label>
@@ -875,7 +875,7 @@ export default function BatchDetails() {
               className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-amber-100/80 text-amber-600 rounded-2xl border border-amber-200 shadow-sm">
+                <div className="p-3 bg-amber-500/20 text-amber-300 rounded-2xl border border-amber-400/40 shadow-sm">
                   <ArrowRightLeft className="w-6 h-6" />
                 </div>
                 <h3 className="text-2xl font-bold leading-6 text-white drop-shadow-sm">Transfer Student</h3>
@@ -931,7 +931,7 @@ export default function BatchDetails() {
               className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-rose-100/80 text-rose-200 rounded-2xl border border-rose-200 shadow-sm">
+                <div className="p-3 bg-rose-500/20 text-rose-300 rounded-2xl border border-rose-400/40 shadow-sm">
                   <Trash2 className="w-6 h-6" />
                 </div>
                 <h3 className="text-2xl font-bold leading-6 text-white drop-shadow-sm">Delete Student</h3>
