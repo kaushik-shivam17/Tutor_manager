@@ -780,7 +780,7 @@ export default function BatchDetails() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 transition-opacity bg-white/10 backdrop-blur-sm" 
+              className="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" 
               onClick={() => setIsStudentModalOpen(false)}
             />
             <motion.div 
@@ -788,7 +788,7 @@ export default function BatchDetails() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative z-10 w-full max-w-2xl p-8 my-8 overflow-hidden text-left bg-white/10 backdrop-blur-2xl shadow-xl rounded-3xl border border-white/20"
+              className="relative z-10 w-full max-w-2xl p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-sky-100/80 text-sky-600 rounded-2xl border border-sky-200 shadow-sm">
@@ -845,7 +845,7 @@ export default function BatchDetails() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 transition-opacity bg-white/10 backdrop-blur-sm" 
+              className="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" 
               onClick={() => setIsTransferModalOpen(false)}
             />
             <motion.div 
@@ -853,7 +853,7 @@ export default function BatchDetails() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-white/10 backdrop-blur-2xl shadow-xl rounded-3xl border border-white/20"
+              className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-amber-100/80 text-amber-600 rounded-2xl border border-amber-200 shadow-sm">
@@ -901,7 +901,7 @@ export default function BatchDetails() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 transition-opacity bg-white/10 backdrop-blur-sm" 
+              className="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" 
               onClick={() => { setIsDeleteModalOpen(false); setStudentToDelete(null); }}
             />
             <motion.div 
@@ -909,7 +909,7 @@ export default function BatchDetails() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-white/10 backdrop-blur-2xl shadow-xl rounded-3xl border border-white/20"
+              className="relative z-10 w-full max-w-md p-8 my-8 overflow-hidden text-left bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-rose-100/80 text-rose-200 rounded-2xl border border-rose-200 shadow-sm">
