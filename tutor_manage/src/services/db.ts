@@ -36,6 +36,30 @@ export const createBatch = async (data: Omit<Batch, 'id' | 'userId' | 'createdAt
   }
 };
 
+export const updateBatch = async (id: string, data: Partial<Pick<Batch, 'name' | 'schedule' | 'startDate' | 'isActive'>>) => {
+  const uid = getUserId();
+  if (!uid) throw new Error("User not authenticated");
+  const ref = doc(db, 'batches', id);
+  try {
+    const { updateDoc } = await import('firebase/firestore');
+    await updateDoc(ref, data);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, 'batches');
+    throw error;
+  }
+};
+
+export const deleteBatch = async (id: string) => {
+  const uid = getUserId();
+  if (!uid) throw new Error("User not authenticated");
+  try {
+    await deleteDoc(doc(db, 'batches', id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, 'batches');
+    throw error;
+  }
+};
+
 // Students
 export const subscribeToStudents = (batchId: string | null, callback: (students: Student[]) => void) => {
   const uid = getUserId();

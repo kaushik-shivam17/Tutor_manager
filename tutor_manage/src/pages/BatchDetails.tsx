@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Users, CalendarCheck, DollarSign, Phone, Edit, Trash2, ArrowRightLeft, Search, Filter, ChevronLeft, FileText, ChevronDown, UserPlus } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Users, CalendarCheck, DollarSign, Phone, Edit, Trash2, ArrowRightLeft, Search, Filter, ChevronLeft, FileText, ChevronDown, UserPlus, Settings, ToggleLeft, ToggleRight, BookOpen } from 'lucide-react';
 import { clsx } from 'clsx';
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSunday, isToday } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,13 +17,16 @@ import {
   markBulkAttendance,
   removeAttendance,
   autoCreateFees,
-  markFeePaid
+  markFeePaid,
+  updateBatch,
+  deleteBatch
 } from '../services/db';
 import { Batch, Student, Attendance, Fee } from '../models/types';
 import CalendarView from '../components/CalendarView';
 
 export default function BatchDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'students' | 'attendance' | 'fees'>('students');
   
   const [batch, setBatch] = useState<Batch | null>(null);
@@ -58,6 +61,12 @@ export default function BatchDetails() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Edit/Delete Batch modals
+  const [isEditBatchModalOpen, setIsEditBatchModalOpen] = useState(false);
+  const [isDeleteBatchModalOpen, setIsDeleteBatchModalOpen] = useState(false);
+  const [batchForm, setBatchForm] = useState({ name: '', schedule: '', startDate: '', isActive: true });
+  const [isBatchSubmitting, setIsBatchSubmitting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -242,19 +251,75 @@ export default function BatchDetails() {
     return eachDayOfInterval({ start, end });
   }, [attendanceDate]);
 
+  const openEditBatchModal = () => {
+    if (!batch) return;
+    setBatchForm({
+      name: batch.name,
+      schedule: batch.schedule || '',
+      startDate: batch.startDate,
+      isActive: batch.isActive !== false,
+    });
+    setIsEditBatchModalOpen(true);
+  };
+
+  const handleUpdateBatch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!batch || !batchForm.name.trim()) return;
+    setIsBatchSubmitting(true);
+    try {
+      await updateBatch(batch.id, {
+        name: batchForm.name.trim(),
+        schedule: batchForm.schedule.trim(),
+        startDate: batchForm.startDate,
+        isActive: batchForm.isActive,
+      });
+      setIsEditBatchModalOpen(false);
+      toast.success('Batch updated successfully');
+    } catch {
+      toast.error('Failed to update batch');
+    } finally {
+      setIsBatchSubmitting(false);
+    }
+  };
+
+  const handleDeleteBatch = async () => {
+    if (!batch) return;
+    setIsBatchSubmitting(true);
+    try {
+      await deleteBatch(batch.id);
+      toast.success(`Batch "${batch.name}" deleted`);
+      navigate('/dashboard');
+    } catch {
+      toast.error('Failed to delete batch');
+    } finally {
+      setIsBatchSubmitting(false);
+      setIsDeleteBatchModalOpen(false);
+    }
+  };
+
   if (!batch) return <div className="p-8 text-center">Loading...</div>;
 
   return (
     <div className="space-y-6 relative z-10">
       {/* Header */}
       <div className="bg-white/10 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link to="/dashboard" className="p-2 -ml-2 text-white/60 hover:text-indigo-200 hover:bg-white/10 rounded-xl transition-all shadow-sm border border-transparent hover:border-white/60">
+        <div className="flex items-center gap-4 min-w-0">
+          <Link to="/dashboard" className="p-2 -ml-2 text-white/60 hover:text-indigo-200 hover:bg-white/10 rounded-xl transition-all shadow-sm border border-transparent hover:border-white/60 flex-shrink-0">
             <ChevronLeft className="w-6 h-6" />
           </Link>
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow-sm">{batch.name}</h1>
-            <div className="flex items-center gap-3 mt-2 text-sm font-medium text-white/80">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow-sm truncate">{batch.name}</h1>
+              <span className={clsx(
+                'flex-shrink-0 px-3 py-1 text-xs font-extrabold rounded-full border uppercase tracking-widest',
+                batch.isActive !== false
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                  : 'bg-slate-500/20 text-slate-300 border-slate-400/40'
+              )}>
+                {batch.isActive !== false ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-sm font-medium text-white/80">
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/60 shadow-sm">
                 <CalendarCheck className="w-4 h-4 text-indigo-200" />
                 Started {format(parseISO(batch.startDate), 'MMM d, yyyy')}
@@ -263,8 +328,30 @@ export default function BatchDetails() {
                 <Users className="w-4 h-4 text-emerald-200" />
                 {students.length} Students
               </span>
+              {batch.schedule && (
+                <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/60 shadow-sm">
+                  <BookOpen className="w-4 h-4 text-purple-200" />
+                  {batch.schedule}
+                </span>
+              )}
             </div>
           </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={openEditBatchModal}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/50 text-white rounded-2xl text-sm font-bold transition-all hover:scale-[1.02] shadow-sm"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">Edit Batch</span>
+          </button>
+          <button
+            onClick={() => setIsDeleteBatchModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-rose-500/15 hover:bg-rose-500/30 border border-rose-400/30 hover:border-rose-400/50 text-rose-300 rounded-2xl text-sm font-bold transition-all hover:scale-[1.02] shadow-sm"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Delete</span>
+          </button>
         </div>
       </div>
 
@@ -960,6 +1047,165 @@ export default function BatchDetails() {
           </div>
         </div>
       )}
+      </AnimatePresence>
+
+      {/* Edit Batch Modal */}
+      <AnimatePresence>
+        {isEditBatchModalOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 sm:p-0">
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-md"
+                onClick={() => !isBatchSubmitting && setIsEditBatchModalOpen(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="relative z-10 w-full max-w-lg p-8 my-8 bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-white/20"
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="p-3 bg-indigo-500/20 text-indigo-300 rounded-2xl border border-indigo-400/40 shadow-sm">
+                    <Settings className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white drop-shadow-sm">Edit Batch</h3>
+                </div>
+
+                <form onSubmit={handleUpdateBatch} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-extrabold text-white/80 mb-2 uppercase tracking-wide">Batch Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={batchForm.name}
+                      onChange={e => setBatchForm(f => ({ ...f, name: e.target.value }))}
+                      className="block w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-2xl text-white font-bold placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      placeholder="e.g. Class 10 Science"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-extrabold text-white/80 mb-2 uppercase tracking-wide">Start Date *</label>
+                    <input
+                      type="date"
+                      required
+                      value={batchForm.startDate}
+                      onChange={e => setBatchForm(f => ({ ...f, startDate: e.target.value }))}
+                      className="block w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-2xl text-white font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors [color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-extrabold text-white/80 mb-2 uppercase tracking-wide">Schedule</label>
+                    <input
+                      type="text"
+                      value={batchForm.schedule}
+                      onChange={e => setBatchForm(f => ({ ...f, schedule: e.target.value }))}
+                      className="block w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-2xl text-white font-bold placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      placeholder="e.g. Mon-Wed-Fri, 5 PM – 6 PM"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-extrabold text-white/80 mb-3 uppercase tracking-wide">Status</label>
+                    <button
+                      type="button"
+                      onClick={() => setBatchForm(f => ({ ...f, isActive: !f.isActive }))}
+                      className={clsx(
+                        'flex items-center gap-3 w-full px-5 py-4 rounded-2xl border font-bold text-sm transition-all',
+                        batchForm.isActive
+                          ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-300'
+                          : 'bg-slate-500/15 border-slate-400/40 text-slate-300'
+                      )}
+                    >
+                      {batchForm.isActive
+                        ? <ToggleRight className="w-6 h-6 flex-shrink-0 text-emerald-400" />
+                        : <ToggleLeft className="w-6 h-6 flex-shrink-0 text-slate-400" />}
+                      <div className="text-left">
+                        <p className="font-extrabold">{batchForm.isActive ? 'Active' : 'Inactive'}</p>
+                        <p className="text-xs opacity-70 font-semibold mt-0.5">
+                          {batchForm.isActive ? 'Batch is currently running' : 'Batch is paused or completed'}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="pt-4 flex flex-col-reverse sm:flex-row gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditBatchModalOpen(false)}
+                      disabled={isBatchSubmitting}
+                      className="w-full sm:w-auto px-8 py-3 border border-white/20 rounded-2xl text-sm font-bold text-white/80 bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isBatchSubmitting}
+                      className="w-full sm:flex-1 px-8 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/30 transition-all hover:scale-[1.02] disabled:opacity-50"
+                    >
+                      {isBatchSubmitting ? 'Saving…' : 'Save Changes'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Batch Confirmation Modal */}
+      <AnimatePresence>
+        {isDeleteBatchModalOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 sm:p-0">
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-md"
+                onClick={() => !isBatchSubmitting && setIsDeleteBatchModalOpen(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="relative z-10 w-full max-w-md p-8 my-8 bg-slate-900/95 backdrop-blur-2xl shadow-2xl rounded-3xl border border-rose-500/30"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-3 bg-rose-500/20 text-rose-300 rounded-2xl border border-rose-400/40 shadow-sm">
+                    <Trash2 className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Delete Batch</h3>
+                </div>
+                <p className="text-white/70 text-sm font-semibold mb-2">You are about to delete:</p>
+                <p className="text-white font-extrabold text-lg mb-6 bg-white/10 px-4 py-3 rounded-2xl border border-white/20">{batch.name}</p>
+                <p className="text-white/60 text-sm font-medium mb-8">
+                  This will permanently remove the batch. Student records, attendance, and fees linked to this batch will <strong className="text-rose-300">not</strong> be deleted, but will be orphaned. This action cannot be undone.
+                </p>
+                <div className="flex flex-col-reverse sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteBatchModalOpen(false)}
+                    disabled={isBatchSubmitting}
+                    className="w-full sm:w-auto px-8 py-3 border border-white/20 rounded-2xl text-sm font-bold text-white/80 bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteBatch}
+                    disabled={isBatchSubmitting}
+                    className="w-full sm:flex-1 px-8 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02] disabled:opacity-50"
+                  >
+                    {isBatchSubmitting ? 'Deleting…' : 'Yes, Delete Batch'}
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        )}
       </AnimatePresence>
 
     </div>

@@ -5,6 +5,7 @@ export interface Batch {
   schedule: string;
   userId: string;
   createdAt: string;
+  isActive?: boolean;
 }
 
 export interface Student {
