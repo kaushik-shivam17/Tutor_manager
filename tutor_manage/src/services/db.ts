@@ -1,4 +1,4 @@
-import { collection, doc, setDoc, deleteDoc, query, where, getDocs, onSnapshot, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, query, where, getDocs, onSnapshot, writeBatch } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Batch, Student, Attendance, Fee } from '../models/types';
 import { handleFirestoreError, OperationType } from '../utils/firestoreErrorHandler';
@@ -6,6 +6,16 @@ import { handleFirestoreError, OperationType } from '../utils/firestoreErrorHand
 // Helper to get user ID
 const getUserId = () => {
   return auth.currentUser?.uid || null;
+};
+
+const requireUserId = () => {
+  const uid = getUserId();
+  if (!uid) throw new Error('User not authenticated');
+  return uid;
+};
+
+const assertDocumentId = (id: string) => {
+  if (!id || id.includes('/')) throw new Error('Invalid document identifier');
 };
 
 // Batches
@@ -20,8 +30,7 @@ export const subscribeToBatches = (callback: (batches: Batch[]) => void) => {
 };
 
 export const createBatch = async (data: Omit<Batch, 'id' | 'userId' | 'createdAt'>) => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  const uid = requireUserId();
   
   const newRef = doc(collection(db, 'batches'));
   try {
@@ -37,8 +46,8 @@ export const createBatch = async (data: Omit<Batch, 'id' | 'userId' | 'createdAt
 };
 
 export const updateBatch = async (id: string, data: Partial<Pick<Batch, 'name' | 'schedule' | 'startDate' | 'isActive'>>) => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  requireUserId();
+  assertDocumentId(id);
   const ref = doc(db, 'batches', id);
   try {
     const { updateDoc } = await import('firebase/firestore');
@@ -50,8 +59,8 @@ export const updateBatch = async (id: string, data: Partial<Pick<Batch, 'name' |
 };
 
 export const deleteBatch = async (id: string) => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  requireUserId();
+  assertDocumentId(id);
   try {
     await deleteDoc(doc(db, 'batches', id));
   } catch (error) {
@@ -75,8 +84,7 @@ export const subscribeToStudents = (batchId: string | null, callback: (students:
 };
 
 export const createStudent = async (data: Omit<Student, 'id' | 'userId' | 'createdAt'>) => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  const uid = requireUserId();
   
   const newRef = doc(collection(db, 'students'));
   try {
@@ -91,7 +99,9 @@ export const createStudent = async (data: Omit<Student, 'id' | 'userId' | 'creat
   }
 };
 
-export const updateStudent = async (id: string, data: Partial<Student>) => {
+export const updateStudent = async (id: string, data: Partial<Pick<Student, 'name' | 'fatherName' | 'mobileNumber' | 'joiningDate' | 'monthlyFee' | 'batchId'>>) => {
+  requireUserId();
+  assertDocumentId(id);
   try {
     await setDoc(doc(db, 'students', id), data, { merge: true });
   } catch (error) {
@@ -100,6 +110,8 @@ export const updateStudent = async (id: string, data: Partial<Student>) => {
 };
 
 export const deleteStudent = async (id: string) => {
+  requireUserId();
+  assertDocumentId(id);
   try {
     await deleteDoc(doc(db, 'students', id));
   } catch (error) {
@@ -157,6 +169,8 @@ export const markAttendance = async (studentId: string, batchId: string, date: s
 };
 
 export const removeAttendance = async (studentId: string, date: string) => {
+  requireUserId();
+  assertDocumentId(studentId);
   const id = `${studentId}_${date}`;
   try {
     await deleteDoc(doc(db, 'attendance', id));
@@ -166,8 +180,7 @@ export const removeAttendance = async (studentId: string, date: string) => {
 };
 
 export const markBulkAttendance = async (students: Student[], batchId: string, date: string, status: 'Present' | 'Absent' | 'Holiday') => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  const uid = requireUserId();
   
   const batch = writeBatch(db);
   
@@ -214,8 +227,7 @@ export const subscribeToFees = (batchId: string | null, month: number, year: num
 };
 
 export const autoCreateFees = async (students: Student[], month: number, year: number) => {
-  const uid = getUserId();
-  if (!uid) throw new Error("User not authenticated");
+  const uid = requireUserId();
   
   // Fetch existing fee records to avoid overwriting them
   const existingQuery = query(collection(db, 'fees'), 
@@ -229,7 +241,7 @@ export const autoCreateFees = async (students: Student[], month: number, year: n
     const snap = await getDocs(existingQuery);
     existingIds = new Set(snap.docs.map(d => d.data().studentId));
   } catch (error) {
-    console.error("Failed to fetch existing fees before creation", error);
+    handleFirestoreError(error, OperationType.LIST, 'fees');
   }
 
   const batch = writeBatch(db);
@@ -263,6 +275,8 @@ export const autoCreateFees = async (students: Student[], month: number, year: n
 };
 
 export const markFeePaid = async (feeId: string, status: 'Paid' | 'Unpaid') => {
+  requireUserId();
+  assertDocumentId(feeId);
   try {
     await setDoc(doc(db, 'fees', feeId), {
       status,

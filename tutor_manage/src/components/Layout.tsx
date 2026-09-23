@@ -82,7 +82,7 @@ export default function Layout() {
         <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] rounded-full bg-white/10 blur-[120px] mix-blend-overlay animate-pulse" style={{ animationDuration: '12s' }} />
       </div>
 
-      <nav className="no-print sticky top-0 z-30 bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-sm">
+      <nav className="no-print dark-surface sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">

@@ -39,7 +39,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-transparent relative overflow-hidden">
+    <div className="min-h-screen flex bg-[#0a0a0a] relative overflow-hidden">
       {/* Decorative background for the left pane side */}
       <div className="absolute top-0 left-0 p-32 bg-white/10 rounded-full blur-[100px] mix-blend-overlay w-[50vh] h-[50vh]"></div>
       <div className="absolute bottom-0 left-20 p-32 bg-white/10 rounded-full blur-[100px] mix-blend-overlay w-[40vh] h-[40vh]"></div>
@@ -70,7 +70,7 @@ export default function Login() {
             <button
               onClick={handleLogin}
               disabled={isLoggingIn}
-              className="w-full flex justify-center items-center gap-3 py-4 px-4 border border-white/30 rounded-2xl shadow-lg bg-white/20 backdrop-blur-md text-base font-bold text-white hover:bg-white/30 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full py-4 px-4 text-base disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
                 <path

@@ -14,10 +14,10 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 const STORAGE_KEY = 'tutor-manage-theme';
 
 const THEMES: { id: Theme; label: string }[] = [
-  { id: 'vibrant', label: 'Vibrant' },
-  { id: 'midnight', label: 'Midnight' },
-  { id: 'sunset', label: 'Sunset' },
-  { id: 'forest', label: 'Forest' },
+  { id: 'vibrant', label: 'Studio' },
+  { id: 'midnight', label: 'Ink' },
+  { id: 'sunset', label: 'Carbon' },
+  { id: 'forest', label: 'Slate' },
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

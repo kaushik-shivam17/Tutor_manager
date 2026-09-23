@@ -102,7 +102,7 @@ export default function CommandPalette({ open, onClose, batches, students }: Pro
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-            className="relative w-full max-w-2xl bg-slate-900/80 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
+            className="dark-surface relative w-full max-w-2xl bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
           >
             <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
               <Search className="w-5 h-5 text-white/60" />

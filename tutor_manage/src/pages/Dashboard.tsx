@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Users, DollarSign, Plus, AlertCircle, Clock, BookOpen, ChevronRight, Search, Bell, CheckCircle2 } from 'lucide-react';
-import { subscribeToBatches, subscribeToStudents, subscribeToFees, createBatch } from '../services/db';
-import { Batch, Student, Fee } from '../models/types';
+import { Users, DollarSign, Plus, AlertCircle, Clock, BookOpen, ChevronRight, Search, Bell, CheckCircle2, CalendarCheck, ArrowUpRight, Sparkles, FileText } from 'lucide-react';
+import { subscribeToBatches, subscribeToStudents, subscribeToFees, subscribeAllAttendance, createBatch } from '../services/db';
+import { Batch, Student, Fee, Attendance } from '../models/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [fees, setFees] = useState<Fee[]>([]);
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newBatchName, setNewBatchName] = useState('');
   const [newBatchDate, setNewBatchDate] = useState('');
@@ -23,11 +24,13 @@ export default function Dashboard() {
     const unsubStudents = subscribeToStudents(null, setStudents);
     const now = new Date();
     const unsubFees = subscribeToFees(null, now.getMonth() + 1, now.getFullYear(), setFees);
+    const unsubAttendance = subscribeAllAttendance(setAttendance);
 
     return () => {
       unsubBatches();
       unsubStudents();
       unsubFees();
+      unsubAttendance();
     };
   }, []);
 
@@ -45,6 +48,24 @@ export default function Dashboard() {
       return { fee, student, batch };
     }).filter(item => item.student != null);
   }, [fees, students, batches]);
+
+  const attendanceSummary = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const todayRecords = attendance.filter(record => record.date === today);
+    const marked = todayRecords.filter(record => record.status !== 'Holiday');
+    const present = marked.filter(record => record.status === 'Present').length;
+    return {
+      present,
+      marked: marked.length,
+      rate: marked.length ? Math.round((present / marked.length) * 100) : 0,
+    };
+  }, [attendance]);
+
+  const collectionRate = useMemo(() => {
+    const total = fees.reduce((sum, fee) => sum + fee.amount, 0);
+    const paid = fees.filter(fee => fee.status === 'Paid').reduce((sum, fee) => sum + fee.amount, 0);
+    return total ? Math.round((paid / total) * 100) : 0;
+  }, [fees]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -145,13 +166,61 @@ export default function Dashboard() {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 shadow-lg shadow-indigo-200/50 text-sm font-bold rounded-2xl text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all hover:scale-[1.02] whitespace-nowrap"
+             className="btn-primary w-full sm:w-auto px-6 py-3 text-sm whitespace-nowrap"
           >
             <Plus className="-ml-1 mr-2 h-5 w-5 drop-shadow-sm" />
             Create Batch
           </button>
         </div>
       </div>
+
+      {/* Daily command strip */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="surface rounded-[2rem] p-6 sm:p-8"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-7">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/45">Today at a glance</p>
+              <h2 className="font-display text-2xl font-semibold text-white mt-1">
+                {new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
+              </h2>
+              <p className="text-sm text-white/55 mt-1">Keep your classes moving with a quick daily check-in.</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:gap-5">
+            <div className="min-w-[78px] border-l border-white/10 pl-3 sm:pl-5">
+              <p className="text-2xl font-display font-semibold text-white">{attendanceSummary.marked}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Marked today</p>
+            </div>
+            <div className="min-w-[78px] border-l border-white/10 pl-3 sm:pl-5">
+              <p className="text-2xl font-display font-semibold text-white">{attendanceSummary.rate}%</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Attendance</p>
+            </div>
+            <div className="min-w-[78px] border-l border-white/10 pl-3 sm:pl-5">
+              <p className="text-2xl font-display font-semibold text-white">{collectionRate}%</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Collected</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3 mt-7 pt-5 border-t border-white/10">
+          <Link to="/analytics" className="btn-secondary px-4 py-2.5 text-sm">
+            <ArrowUpRight className="w-4 h-4" /> View insights
+          </Link>
+          <Link to="/reports" className="btn-secondary px-4 py-2.5 text-sm">
+            <FileText className="w-4 h-4" /> Export a report
+          </Link>
+          <button onClick={() => setIsModalOpen(true)} className="btn-primary px-4 py-2.5 text-sm">
+            <Plus className="w-4 h-4" /> Add a batch
+          </button>
+        </div>
+      </motion.section>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -301,7 +370,7 @@ export default function Dashboard() {
                 <div className="mt-8">
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className="inline-flex items-center px-6 py-3 shadow-lg bg-white/20 text-base font-bold rounded-2xl text-white hover:bg-white/30 border border-white/30 transition-all hover:scale-[1.02]"
+                     className="btn-primary px-6 py-3 text-base"
                   >
                     <Plus className="-ml-1 mr-2 h-5 w-5 border border-white/20 rounded-full" />
                     Create First Batch
@@ -474,7 +543,7 @@ export default function Dashboard() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3.5 rounded-2xl shadow-lg bg-white text-indigo-900 border-none text-sm font-bold hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all hover:scale-[1.02] disabled:opacity-50"
+                     className="btn-primary w-full sm:w-auto px-8 py-3.5 text-sm"
                     >
                       {isSubmitting ? 'Creating...' : 'Create Batch'}
                     </button>

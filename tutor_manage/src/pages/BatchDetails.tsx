@@ -174,6 +174,7 @@ export default function BatchDetails() {
   };
 
   const handleMarkAttendance = async (studentId: string, status: 'Present' | 'Absent' | 'Holiday' | null) => {
+    if (!batch) return;
     if (status === null) {
       await removeAttendance(studentId, attendanceDate);
     } else {
@@ -182,6 +183,7 @@ export default function BatchDetails() {
   };
 
   const handleGridCellClick = async (studentId: string, dateStr: string, currentStatus: string | undefined) => {
+    if (!batch) return;
     let nextStatus: 'Present' | 'Absent' | 'Holiday' | null = 'Present';
     if (currentStatus === 'Present') nextStatus = 'Absent';
     else if (currentStatus === 'Absent') nextStatus = 'Holiday';
@@ -195,10 +197,12 @@ export default function BatchDetails() {
   };
 
   const handleMarkAllPresent = async () => {
+    if (!batch) return;
     await markBulkAttendance(students, batch.id, attendanceDate, 'Present');
   };
 
   const handleMarkUnmarkedAbsent = async () => {
+    if (!batch) return;
     const unmarkedStudents = students.filter(student => !attendanceRecords.some(r => r.studentId === student.id && r.date === attendanceDate));
     if (unmarkedStudents.length > 0) {
       await markBulkAttendance(unmarkedStudents, batch.id, attendanceDate, 'Absent');
@@ -206,6 +210,7 @@ export default function BatchDetails() {
   };
 
   const handleMarkDayAsHoliday = async () => {
+    if (!batch) return;
     await markBulkAttendance(students, batch.id, attendanceDate, 'Holiday');
   };
 

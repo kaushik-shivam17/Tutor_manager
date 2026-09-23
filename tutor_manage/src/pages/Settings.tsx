@@ -17,10 +17,10 @@ const SHORTCUTS: { keys: string[]; label: string }[] = [
 ];
 
 const THEME_PREVIEW: Record<string, string> = {
-  vibrant:  'linear-gradient(135deg, #4f46e5, #9333ea, #3b82f6, #ec4899)',
-  midnight: 'linear-gradient(135deg, #0f172a, #1e1b4b, #0c0a1f, #1e293b)',
-  sunset:   'linear-gradient(135deg, #f97316, #ec4899, #db2777, #f59e0b)',
-  forest:   'linear-gradient(135deg, #064e3b, #047857, #0f766e, #134e4a)',
+  vibrant:  'linear-gradient(135deg, #ffffff 0%, #ffffff 58%, #111111 58%)',
+  midnight: 'linear-gradient(135deg, #111111 0%, #111111 58%, #ffffff 58%)',
+  sunset:   'linear-gradient(135deg, #2b2b2b, #0a0a0a)',
+  forest:   'linear-gradient(135deg, #666666, #171717)',
 };
 
 export default function Settings() {
@@ -66,7 +66,7 @@ export default function Settings() {
       {/* Theme */}
       <Card title="Appearance" icon={<Palette className="w-5 h-5" />}>
         <p className="text-sm text-white/70 font-semibold mb-4">
-          Pick a gradient theme. Your choice is saved on this device.
+           Choose a monochrome workspace tone. Your choice is saved on this device.
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {themes.map(t => {
